@@ -94,12 +94,12 @@ class YojanaRAG:
 
         if statuses == {"historical_unverified_current"}:
             return (
-                "\\n\\nWARNING: The cited PM-KISAN guidelines are "
+                "\n\nWARNING: The cited PM-KISAN guidelines are "
                 "historical (29 March 2020). Current rules are unverified."
             )
 
         return (
-            "\\n\\nWARNING: Some cited documents have not been "
+            "\n\nWARNING: Some cited documents have not been "
             "verified against the latest government rules. "
             "Confirm eligibility and benefits on official portals."
         )
