@@ -1,0 +1,10 @@
+streamlit
+python-dotenv
+google-genai
+pydantic
+pymupdf
+sentence-transformers
+faiss-cpu
+rank-bm25
+numpy
+pytest

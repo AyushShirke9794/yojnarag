@@ -1,0 +1,44 @@
+[
+  {
+    "scheme_id": "aicte_pragati",
+    "scheme_name": "AICTE Pragati Scholarship",
+    "category": "Education",
+    "source_url": "https://www.aicte-india.org/",
+    "verification_status": "pending"
+  },
+  {
+    "scheme_id": "pm_kisan",
+    "scheme_name": "PM-KISAN",
+    "category": "Agriculture",
+    "source_url": "https://pmkisan.gov.in/",
+    "verification_status": "pending"
+  },
+  {
+    "scheme_id": "pmkvy",
+    "scheme_name": "Pradhan Mantri Kaushal Vikas Yojana",
+    "category": "Employment",
+    "source_url": "https://www.skillindiadigital.gov.in/",
+    "verification_status": "pending"
+  },
+  {
+    "scheme_id": "pmmvy",
+    "scheme_name": "Pradhan Mantri Matru Vandana Yojana",
+    "category": "Women & Children",
+    "source_url": "https://pmmvy.wcd.gov.in/",
+    "verification_status": "pending"
+  },
+  {
+    "scheme_id": "pmay_urban",
+    "scheme_name": "Pradhan Mantri Awas Yojana - Urban",
+    "category": "Housing",
+    "source_url": "https://pmay-urban.gov.in/",
+    "verification_status": "pending"
+  },
+  {
+    "scheme_id": "pmjay",
+    "scheme_name": "Ayushman Bharat PM-JAY",
+    "category": "Healthcare",
+    "source_url": "https://nha.gov.in/",
+    "verification_status": "pending"
+  }
+]

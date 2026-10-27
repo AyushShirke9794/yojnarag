@@ -1,0 +1,17 @@
+[
+  {
+    "scheme_id": "pm_kisan",
+    "scheme_name": "Pradhan Mantri Kisan Samman Nidhi (PM-KISAN)",
+    "category": "Agriculture",
+    "description": "A Central Sector scheme described in the 2020 operational guidelines as providing income support to landholding farmer families.",
+    "eligibility_text": "According to the 2020 operational guidelines, eligible landholding farmer families with cultivable land may receive assistance, subject to exclusions and other conditions in the guidelines. Current eligibility rules have not been verified.",
+    "benefits": "The 2020 guidelines describe Rs.6,000 per year, distributed in three installments of Rs.2,000 each.",
+    "required_documents": [],
+    "official_source_url": "https://pmkisan.gov.in/",
+    "verification_status": "historical",
+    "source_document_date": "2020-03-29",
+    "source_verified_date": null,
+    "source_document_title": "PM-KISAN Revised Operational Guidelines",
+    "verification_notes": "Based on the historical PDF stored at data/raw/pm_kisan.pdf. Current eligibility, benefits, and document requirements remain unverified. An empty required_documents list means not yet extracted, not that no documents are required."
+  }
+]

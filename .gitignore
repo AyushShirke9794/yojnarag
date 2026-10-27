@@ -1,0 +1,21 @@
+# Python virtual environment
+.venv/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# API keys and secrets
+.env
+.env.*
+.streamlit/secrets.toml
+
+# Local development files
+.vscode/
+.pytest_cache/
+!.env.example
+
+app_backup_*.py
+app_step*_backup.py
+src/*_backup.py
+src/*_step*_backup.py
