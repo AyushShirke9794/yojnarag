@@ -19,3 +19,7 @@ app_backup_*.py
 app_step*_backup.py
 src/*_backup.py
 src/*_step*_backup.py
+
+# Temporary development backups
+*.bak
+data/processed/schemes_before_5schemes.json

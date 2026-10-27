@@ -58,6 +58,8 @@ class HybridRetriever:
                 "chunk_id": chunk_id,
                 "source_file": documents[chunk_id]["source_file"],
                 "page_number": documents[chunk_id]["page_number"],
+                "scheme_id": documents[chunk_id]["scheme_id"],
+                "verification_status": documents[chunk_id]["verification_status"],
                 "rrf_score": fused_scores[chunk_id],
                 "retrieved_by": retrieval_sources[chunk_id],
                 "text": documents[chunk_id]["text"]

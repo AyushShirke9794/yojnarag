@@ -13,20 +13,20 @@ class SchemeRetriever:
     def __init__(self):
         print("Loading FAISS index...")
         self.index = faiss.read_index(
-            "data/vectorstore/faiss.index"
+            "data/vectorstore/faiss_5schemes.index"
         )
 
         with open(
-            "data/vectorstore/metadata.json",
+            "data/vectorstore/metadata_5schemes.json",
             "r",
             encoding="utf-8"
         ) as file:
             metadata = json.load(file)
 
-        self.chunks = metadata["chunks"]
+        self.chunks = metadata
 
-        if metadata["embedding_model"] != MODEL_NAME:
-            raise ValueError("Embedding model mismatch.")
+        if self.index.d != 384:
+            raise ValueError("Embedding dimension mismatch.")
 
         if self.index.ntotal != len(self.chunks):
             raise ValueError("FAISS index and metadata count mismatch.")
@@ -69,6 +69,8 @@ class SchemeRetriever:
             chunk = self.chunks[int(index)]
 
             results.append({
+                "scheme_id": chunk["scheme_id"],
+                "verification_status": chunk["verification_status"],
                 "chunk_id": chunk["chunk_id"],
                 "source_file": chunk["source_file"],
                 "page_number": chunk["page_number"],

@@ -15,7 +15,7 @@ class RerankedRetriever:
         print("Loading cross-encoder reranker...")
         self.reranker = CrossEncoder(RERANKER_MODEL)
 
-    def search(self, query, top_k=3, candidate_k=30):
+    def search(self, query, top_k=3, candidate_k=30, scheme_id=None):
         if not query.strip():
             raise ValueError("Query cannot be empty.")
 
@@ -27,6 +27,12 @@ class RerankedRetriever:
             top_k=max(top_k, candidate_k),
             candidate_k=max(top_k, candidate_k)
         )
+
+        if scheme_id is not None:
+            candidates = [
+                item for item in candidates
+                if item.get("scheme_id") == scheme_id
+            ]
 
         if not candidates:
             return []
@@ -52,11 +58,24 @@ class RerankedRetriever:
         for item in ranked[:top_k]:
             final_results.append({
                 **item,
-                "source_title": (
-                    "PM-KISAN Operational Guidelines"
+                "source_title": {
+                    "pm_kisan.pdf": "PM-KISAN Operational Guidelines",
+                    "pragati.pdf": "AICTE Pragati Scholarship Guidelines",
+                    "pmay_urban_2.pdf": "PMAY-Urban 2.0 Operational Guidelines",
+                    "pmkvy_4.pdf": "PMKVY 4.0 Guidelines",
+                    "pmmvy.pdf": "PMMVY Rules, 2022",
+                }.get(item["source_file"], item["source_file"]),
+                "source_revision_date": (
+                    "2020-03-29"
+                    if item["source_file"] == "pm_kisan.pdf"
+                    else None
                 ),
-                "source_revision_date": "2020-03-29",
-                "source_status": "historical_unverified_current",
+                "source_status": (
+                    "historical_unverified_current"
+                    if item["source_file"] == "pm_kisan.pdf"
+                    else "pending_verification"
+                ),
+                "scheme_id": item.get("scheme_id") or item["chunk_id"].rsplit("_", 1)[0],
                 "citation": (
                     f"{item['source_file']}, "
                     f"page {item['page_number']}"

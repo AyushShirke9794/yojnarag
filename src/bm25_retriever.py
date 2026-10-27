@@ -8,13 +8,13 @@ from rank_bm25 import BM25Okapi
 class BM25Retriever:
     def __init__(self):
         with open(
-            "data/vectorstore/metadata.json",
+            "data/vectorstore/metadata_5schemes.json",
             "r",
             encoding="utf-8"
         ) as file:
             metadata = json.load(file)
 
-        self.chunks = metadata["chunks"]
+        self.chunks = metadata
 
         tokenized_corpus = [
             self.tokenize(chunk["text"])
@@ -49,6 +49,8 @@ class BM25Retriever:
             chunk = self.chunks[index]
 
             results.append({
+                "scheme_id": chunk["scheme_id"],
+                "verification_status": chunk["verification_status"],
                 "chunk_id": chunk["chunk_id"],
                 "source_file": chunk["source_file"],
                 "page_number": chunk["page_number"],

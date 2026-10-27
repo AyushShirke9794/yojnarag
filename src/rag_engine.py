@@ -34,72 +34,103 @@ class YojanaRAG:
             "gemini-3.5-flash-lite"
         ]
 
-    def _add_eligibility_evidence(self, question, results):
-        question_lower = question.lower()
+    @staticmethod
+    def _detect_scheme(question):
+        import unicodedata
 
-        eligibility_terms = (
-            "eligible", "eligibility", "excluded",
-            "exclusion", "ineligible", "qualify"
-        )
+        def normalize(value):
+            value = unicodedata.normalize("NFC", value.casefold())
+            return "".join(
+                char for char in value
+                if char not in " -_.\t\n"
+            )
 
-        if not any(term in question_lower for term in eligibility_terms):
-            return results
-
-        path = "data/processed/pm_kisan_chunks.json"
-
-        with open(path, "r", encoding="utf-8") as file:
-            chunks = json.load(file)
-
-        required_ids = (
-            "pm_kisan_0001",
-            "pm_kisan_0002",
-            "pm_kisan_0003",
-            "pm_kisan_0004",
-            "pm_kisan_0005"
-        )
-
-        existing_ids = {
-            result["chunk_id"] for result in results
+        aliases = {
+            "pm_kisan": [
+                "pmkisan", "kisan samman nidhi",
+                "\u092a\u0940\u090f\u092e \u0915\u093f\u0938\u093e\u0928",
+                "\u0915\u093f\u0938\u093e\u0928 \u0938\u092e\u094d\u092e\u093e\u0928",
+            ],
+            "pragati": [
+                "pragati",
+                "\u092a\u094d\u0930\u0917\u0924\u093f",
+                "\u092a\u094d\u0930\u0917\u0924\u0940",
+            ],
+            "pmay_urban_2": [
+                "pmay urban", "pmayu",
+                "pradhan mantri awas yojana",
+                "\u092a\u0940\u090f\u092e\u090f\u0935\u093e\u092f",
+                "\u092a\u0940\u090f\u092e\u090f\u0935\u093e\u0908",
+                "\u0906\u0935\u093e\u0938 \u092f\u094b\u091c\u0928\u093e",
+            ],
+            "pmkvy_4": [
+                "pmkvy", "kaushal vikas",
+                "\u092a\u0940\u090f\u092e\u0915\u0947\u0935\u0940\u0935\u093e\u0908",
+                "\u092a\u0940\u090f\u092e\u0915\u0947\u0935\u094d\u0939\u0940\u0935\u093e\u092f",
+                "\u0915\u094c\u0936\u0932 \u0935\u093f\u0915\u093e\u0938",
+            ],
+            "pmmvy": [
+                "pmmvy", "matru vandana",
+                "\u092e\u093e\u0924\u0943 \u0935\u0902\u0926\u0928\u093e",
+            ],
         }
 
-        for chunk in chunks:
-            if chunk["chunk_id"] not in required_ids:
-                continue
+        text = normalize(question)
 
-            if chunk["chunk_id"] in existing_ids:
-                continue
+        matches = [
+            scheme_id
+            for scheme_id, names in aliases.items()
+            if any(normalize(name) in text for name in names)
+        ]
 
-            results.append({
-                "chunk_id": chunk["chunk_id"],
-                "text": chunk["text"],
-                "source_title": "PM-KISAN Operational Guidelines",
-                "source_file": "pm_kisan.pdf",
-                "page_number": chunk["page_number"],
-                "source_revision_date": "2020-03-29",
-                "source_status": "historical_unverified_current",
-                "citation": (
-                    f"pm_kisan.pdf, page {chunk['page_number']}"
-                )
-            })
+        return matches[0] if len(matches) == 1 else None
 
-        return results
+    @staticmethod
+    def _source_warning(results):
+        statuses = {r.get("source_status") for r in results}
+
+        if not statuses:
+            return ""
+
+        if statuses == {"historical_unverified_current"}:
+            return (
+                "\\n\\nWARNING: The cited PM-KISAN guidelines are "
+                "historical (29 March 2020). Current rules are unverified."
+            )
+
+        return (
+            "\\n\\nWARNING: Some cited documents have not been "
+            "verified against the latest government rules. "
+            "Confirm eligibility and benefits on official portals."
+        )
 
     def answer(self, question, language='English'):
         if not question.strip():
             return "Please enter a question."
 
+        detected_scheme = self._detect_scheme(question)
+
         results = self.retriever.search(
             question,
             top_k=5,
-            candidate_k=30
+            candidate_k=100 if detected_scheme else 30,
+            scheme_id=detected_scheme
         )
 
         if not results:
             return "No relevant government document passages found."
 
-        results = self._add_eligibility_evidence(
-            question, results
-        )
+        if detected_scheme:
+            results = [
+                r for r in results
+                if r.get("scheme_id") == detected_scheme
+            ]
+
+        if not results:
+            return (
+                "No matching evidence found for the requested scheme. "
+                "Please try a more specific question."
+            )
 
         context = "\n\n".join(
             f"[Source {i}]\n"
@@ -112,8 +143,8 @@ class YojanaRAG:
 
         supported_languages = {
             "English": "English",
-            "Hindi": "Hindi (??????)",
-            "Marathi": "Marathi (?????)"
+            "Hindi": "Hindi",
+            "Marathi": "Marathi"
         }
 
         if language not in supported_languages:
@@ -153,10 +184,7 @@ Evidence:
             for i, r in enumerate(results, start=1)
         )
 
-        warning = (
-            "\n\nWARNING: The PM-KISAN source was revised "
-            "on 29 March 2020. Current rules remain unverified."
-        )
+        warning = self._source_warning(results)
 
         for model in self.models:
             try:
@@ -245,11 +273,12 @@ Evidence:
                     )
                     continue
 
-                return (
-                    "Gemini request failed without an automatic "
-                    "model fallback.\n"
-                    f"{type(error).__name__}: {str(error)[:500]}"
+                print(
+                    f"{model} failed ({type(error).__name__}). "
+                    "Switching to offline evidence mode.",
+                    flush=True
                 )
+                break
 
         evidence = "\n\n".join(
             f"[Source {i}, page {r['page_number']}]\n"

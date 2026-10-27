@@ -17,8 +17,10 @@ st.title("🇮🇳 YojanaRAG")
 st.subheader("Multilingual Government Scheme Assistant")
 
 st.info(
-    "Ask questions about government schemes in English, "
-    "Hindi, or Marathi. Answers are based on retrieved documents."
+    "Explore five government schemes across agriculture, education, "
+    "housing, employment, and women & children. "
+    "Ask questions in English, Hindi, or Marathi. "
+    "Answers use retrieved government documents."
 )
 
 language = st.selectbox(
@@ -128,7 +130,9 @@ else:
 
 st.divider()
 st.caption(
-    "Prototype knowledge base: PM-KISAN operational guidelines "
-    "revised 29 March 2020. Current scheme rules are not yet verified. "
-    "Do not use these answers as final eligibility decisions."
+    "YojanaRAG educational prototype | 5 government schemes | "
+    "606 indexed document chunks. "
+    "Source documents may be historical or superseded. "
+    "Current eligibility and benefits have not been verified. "
+    "Always confirm information on official government portals."
 )
