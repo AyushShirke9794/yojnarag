@@ -1,112 +1,186 @@
-# YojanaRAG
+﻿# YojanaRAG
 
-## Explainable Multilingual Government Scheme Question Answering and Eligibility Assistance Using RAG
+### Explainable Multilingual Government Scheme Question Answering and Eligibility Assistance Using RAG
 
-YojanaRAG is an AI & Data Science mini-project that helps users explore government scheme information through a multilingual question-answering interface.
+**An AI-powered multilingual assistant for exploring Indian government schemes through document-grounded question answering and rule-based eligibility assistance.**
 
-### Features
+![Python](https://img.shields.io/badge/Python-3.x-blue)
+![Streamlit](https://img.shields.io/badge/Streamlit-Web_App-red)
+![FAISS](https://img.shields.io/badge/FAISS-Vector_Search-green)
+![RAG](https://img.shields.io/badge/RAG-Hybrid_Retrieval-purple)
+![Status](https://img.shields.io/badge/Status-Local_Prototype-orange)
 
-- Questions in English, Hindi, and Marathi
-- PDF-based document processing
+## Overview
+
+YojanaRAG is an AI & Data Science mini-project designed to make government scheme information easier to explore.
+
+Users can ask questions in English, Hindi, or Marathi. The application retrieves relevant information from indexed government scheme PDFs and uses Google Gemini to generate evidence-grounded answers with source references.
+
+The project also includes structured, rule-based eligibility assistance. These results are advisory and do not represent official eligibility decisions.
+
+## Key Features
+
+- Multilingual questions in English, Hindi and Marathi
+- Government scheme PDF processing and indexing
 - Multilingual sentence embeddings
-- FAISS semantic retrieval
-- BM25 keyword retrieval
-- Reciprocal Rank Fusion for hybrid search
+- FAISS semantic similarity search
+- BM25 keyword-based retrieval
+- Reciprocal Rank Fusion (RRF)
 - Cross-encoder reranking
-- Gemini-based grounded answer generation
-- Source page references
+- Gemini-powered grounded answer generation
+- Document and page-level source references
 - Offline evidence fallback when generation is unavailable
-- Government scheme information and eligibility assistance
-- Streamlit web interface
+- Structured rule-based eligibility assistance
+- Historical-source warnings and eligibility safeguards
+- Interactive Streamlit interface
 
-### Architecture
+## System Architecture
 
-Government PDF
-    |
-    v
-Text Extraction
-    |
-    v
-Text Chunking
-    |
-    v
-Multilingual Embeddings
-    |
-    +--> FAISS Semantic Retrieval
-    |
-    +--> BM25 Keyword Retrieval
-              |
-              v
-       Hybrid Retrieval (RRF)
-              |
-              v
-       Cross-Encoder Reranking
-              |
-              v
-       Gemini Grounded Answer
-              |
-              v
-       Streamlit User Interface
+The project follows a hybrid retrieval-augmented generation architecture.
 
-The eligibility assistance component reads structured scheme information and uses a separate rule-evaluation engine. It does not issue official eligibility approvals.
+1. Extract and chunk government scheme PDF content.
+2. Create multilingual embeddings and a FAISS index.
+3. Build a BM25 keyword index.
+4. Process multilingual user queries.
+5. Retrieve relevant evidence using semantic and keyword search.
+6. Combine results using Reciprocal Rank Fusion.
+7. Rerank evidence with a cross-encoder.
+8. Generate grounded answers with Gemini.
+9. Present responses with source references through Streamlit.
 
-### Technology Stack
+Eligibility assistance uses a separate structured rule-evaluation workflow.
 
-Python, Streamlit, FAISS, BM25, Sentence Transformers, Cross-Encoder, Google Gemini API, Pydantic, Pytest.
+**[View Detailed System Architecture](docs/architecture/ARCHITECTURE.md)**
 
-### Dataset and Source Limitations
+## Application Screenshots
 
-The currently indexed knowledge base contains PM-KISAN operational guidelines dated 29 March 2020.
+The following screenshots were captured during local application testing.
 
-This source is classified as historical. Current eligibility requirements and required documents have not been independently verified.
+### English Question Answering
 
-The system is a technical and educational prototype. It must not be used as an authoritative source for current government benefits or eligibility decisions.
+![English Output](docs/screenshots/06_english_response.png)
 
-### Installation
+### Hindi Question Answering
 
-Create a Python virtual environment and activate it.
+![Hindi Output](docs/screenshots/03_hindi_response.png)
 
-Install the dependencies:
+### Marathi Question Answering
+
+![Marathi Output](docs/screenshots/04_marathi_response.png)
+
+### Government Scheme Eligibility Assistance
+
+![Eligibility Assistance](docs/screenshots/05_eligibility_assistance.png)
+
+## Technology Stack
+
+| Component | Technology |
+|---|---|
+| Programming Language | Python |
+| User Interface | Streamlit |
+| Semantic Retrieval | FAISS |
+| Keyword Retrieval | BM25 |
+| Hybrid Ranking | Reciprocal Rank Fusion |
+| Reranking | Cross-Encoder |
+| Embeddings | Sentence Transformers |
+| Answer Generation | Google Gemini API |
+| Data Validation | Pydantic |
+| Testing | Pytest |
+| Source Documents | Government Scheme PDFs |
+
+## Government Schemes
+
+The local knowledge base includes documents associated with:
+
+- PM-KISAN
+- PMAY Urban 2.0
+- PMKVY 4.0
+- PMMVY
+- PRAGATI
+
+Source documents may represent historical guidelines rather than current official requirements.
+
+## Installation
+
+### 1. Clone the Repository
 
 ```powershell
-pip install -r requirements.txt
+git clone https://github.com/AyushShirke9794/yojnarag.git
+cd yojnarag
 ```
 
-Create a `.env` file containing:
+### 2. Create a Virtual Environment
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+```
+
+### 3. Install Dependencies
+
+```powershell
+python -m pip install -r requirements.txt
+```
+
+### 4. Configure Gemini API
+
+Create a `.env` file in the project root:
 
 ```text
 GEMINI_API_KEY=your_api_key_here
 ```
 
-Never commit the actual API key to Git.
+Never commit actual API keys.
 
-### Run the Application
+### 5. Run the Application
 
 ```powershell
 python -m streamlit run app.py
 ```
 
-Open http://localhost:8501
+Open http://localhost:8501 in your browser.
 
-### Run Automated Tests
+## Testing
+
+Run automated tests:
 
 ```powershell
 python -m pytest tests -v
 ```
 
-### Testing Status
+**Last recorded local result: 8 tests passed.**
 
-Eight foundational automated tests passed during local development.
+The tests cover foundational project behavior, including database loading, historical-source safeguards, basic rule evaluation and required artifacts.
 
-The tests cover database loading, historical-source safety, basic rule evaluation, and required project artifacts. They do not establish complete retrieval accuracy or multilingual answer quality.
+They do not constitute a complete evaluation of multilingual answer accuracy or retrieval performance.
 
-### Future Improvements
+## Important Limitations
 
-- Expand the number of government schemes
-- Verify current official eligibility rules
-- Add more comprehensive multilingual evaluation
+- Government scheme rules may change over time.
+- Some indexed documents are historical, including PM-KISAN operational guidelines dated 29 March 2020.
+- Current eligibility requirements have not been independently verified.
+- Gemini API access depends on the configured account and quota.
+- Eligibility assistance is informational, not an official government determination.
+- The application is currently a local prototype and is not publicly deployed.
+
+## Future Improvements
+
+- Expand the scheme knowledge base
+- Refresh and verify official source documents
+- Add comprehensive multilingual retrieval and generation benchmarks
+- Improve eligibility rule coverage
 - Deploy the application online
 
-### Disclaimer
+## Developer
 
-YojanaRAG is a student mini-project. Always consult the relevant official government portal for current scheme rules and application decisions.
+**Ayush Shirke**
+
+B.E. Artificial Intelligence & Data Science
+
+A. C. Patil College of Engineering, Kharghar, Navi Mumbai
+
+[GitHub Profile](https://github.com/AyushShirke9794)
+
+## Disclaimer
+
+YojanaRAG is an educational AI project. For current scheme benefits, required documents, application procedures and eligibility decisions, always consult the relevant official government portal.
